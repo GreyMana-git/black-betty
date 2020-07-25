@@ -1,0 +1,142 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    color: #0d0d0d;
+}
+
+header {
+    padding: 24px;
+    color: #f9f9fa;
+    background-color: #0d0d0d;
+    font-size: 64px;
+    line-height: 40px;
+    box-shadow: 0 4px 2px -2px rgba(0, 0, 0, 0.6);
+}
+
+h1 {
+    margin: 0;
+    font-size: 32px;
+}
+
+#tokeninfo {
+    font-size: 18px;
+    color: #404040;
+    float: right;
+}
+
+
+.panel {
+    width: 100%;
+    max-width: 1024px;
+    margin: 16px auto 16px auto;
+    padding: 8px;
+    background-color: #ebe9e1;
+    box-shadow: 4px 4px 2px -2px rgba(0, 0, 0, 0.6);
+    box-sizing: border-box;
+}
+
+.panel .panel-content {
+    display: grid;
+    grid-template-columns: 108px 1fr;
+}
+
+.graph-wrapper {
+    position: relative;
+    padding-top: 50%;
+    height: 0;
+}
+
+.graph {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.overview-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+}
+
+.overview .overview-temperature {
+    font-size: 80px;
+    display: inline-block;
+    width: 50%;
+    text-align: right;
+}
+
+.panel .side-grid div:nth-of-type(2n + 1) {
+    font-weight: bold;
+}
+
+.panel .side-grid div:nth-of-type(2n) {
+    padding-bottom: 12px;
+}
+
+
+
+/** Settings **/
+
+.setting-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    box-shadow: 4px 0 2px -2px rgba(0, 0, 0, 0.6);
+    background-color: #ffffff;
+    padding: 24px;
+    overflow-y: auto;
+    display: none;
+}
+#setting-open {
+    cursor: pointer;
+}
+
+.setting-close {
+    float: right;
+    cursor: pointer;
+}
+
+.setting-panel h2 {
+    padding-top: 24px;
+}
+
+.setting-panel .setting-grid div:nth-of-type(2n+1) {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.setting-panel .setting-grid div:nth-of-type(2n) {
+    padding-bottom: 24px;
+}
+
+
+input[type="text"] {
+    height: 40px;
+    padding: 0 8px 0 8px;
+    font-size: 24px;
+    background-color: #f9f9fa;
+    border: 1px solid #0d0d0d;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+input[type="button"], button {
+    height: 40px;
+    padding: 0 8px 0 px;
+    font-size: 24px;
+    background-color: #106EBE;
+    color: #f9f9fa;
+    padding: 4px 16px 4px 16px;
+    border: 0;
+    width: 33%;
+    margin: 0 0 0 auto;
+    display: block;
+    cursor: pointer;
+}
+
+input[type="button"]:hover, button:hover {
+    background-color: #2080f0;
+}
