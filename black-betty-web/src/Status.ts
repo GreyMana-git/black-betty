@@ -68,16 +68,16 @@ export function getApiUri(path: string): string {
     return window.origin + path;
 }
 
-function getStat(index: number, array: number[]): StatusResponseHistoryStat {
+function explode(index: number, array: number[]): StatusResponseHistoryStat {
     const offset = index * 4;
     return { "current": array[offset], "min": array[offset + 1], "max": array[offset + 2], "average": array[offset + 3] };
 }
 
-export async function getStatusData(merge: StatusResponse | null): Promise<StatusResponse> {
+export async function getStatus(oldStatus: StatusResponse | null): Promise<StatusResponse> {
     const response = await window.fetch(getApiUri("/status"), { "method": "GET" });
     const source = <RawStatusResponse>await response.json();
 
-    const data: StatusResponse = {
+    const status: StatusResponse = {
         "id": source.id,
         "token": source.token,
         "temperature": source.temperature,
@@ -87,35 +87,26 @@ export async function getStatusData(merge: StatusResponse | null): Promise<Statu
         "history": []
     };
 
-    // Convert source data to expanded object
+    // Convert source to expanded object
     const count = source.history.samples.length;
     for (let index = 0; index < count; index++) {
-        data.history.push({
+        status.history.push({
             "sequence": source.history.sequence[index],
             "samples": source.history.samples[index],
-            "temperature": getStat(index, source.history.temperature),
-            "output": getStat(index, source.history.output),
-            "heater": getStat(index, source.history.heater),
-            "health": getStat(index, source.history.health)
+            "temperature": explode(index, source.history.temperature),
+            "output": explode(index, source.history.output),
+            "heater": explode(index, source.history.heater),
+            "health": explode(index, source.history.health)
         });
     }
 
-    if (merge != null) {
-        const sequences = data.history.map((item) => item.sequence);
-        data.history.push(...merge.history.filter((item) => sequences.indexOf(item.sequence) === -1));
+    // Merge with old history
+    if (oldStatus != null) {
+        const sequences = status.history.map((item) => item.sequence);
+        status.history.push(...oldStatus.history.filter((item) => sequences.indexOf(item.sequence) === -1));
     }
 
-    return data;
-}
-
-interface CommandResult {
-    success: boolean;
-    message: string;
-}
-
-export async function executeCommand(data: StatusResponse, command: string): Promise<CommandResult> {
-    const content = "TOKEN " + data.token + " " + command;
-
-    const response = await window.fetch(getApiUri("/command"), { "method": "POST", body: content });
-    return <CommandResult>await response.json();
+    // Limit history to 120 entries
+    status.history = status.history.slice(0, 120);
+    return status
 }

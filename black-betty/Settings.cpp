@@ -7,13 +7,13 @@
 
 constexpr int ADDRESS_OFFSET = 32;
 
-Settings::Settings() : magic(0xB1ACBE11), // The magic number identifies the settings on the eeprom
+Settings::Settings() : magic(0xB1ACBE71), // The magic number identifies the settings on the eeprom
                        version(1),
                        relay_pin(15),
                        heater_toggle_pin(12),
                        display_clock_pin(0),
                        display_dio_pin(2),
-                       unused_in_v1(0),
+                       flags(0),
                        heater_window(500),
                        heater_kp(50),
                        heater_ki(2),
@@ -92,6 +92,13 @@ bool Settings::validate_set_heater_window(int value) {
 
     this->heater_window = static_cast<uint16_t>(value);
     return true;
+}
+
+bool Settings::is_debug() const {
+  return (this->flags & SettingsFlags::FLAG_DEBUG) == SettingsFlags::FLAG_DEBUG;
+}
+void Settings::set_debug(bool enable) {
+  this->flags = (this->flags & ~SettingsFlags::FLAG_DEBUG) | (enable ? SettingsFlags::FLAG_DEBUG : 0);
 }
 
 void Settings::load()

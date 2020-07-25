@@ -24,11 +24,9 @@ double HeaterPID::get_input() const { return this->input; }
 double HeaterPID::get_output() const { return this->output; }
 double HeaterPID::get_setpoint() const { return this->setpoint; }
 
-void HeaterPID::compute(double input)
-{
+void HeaterPID::compute(double input) {
     // If the PID is disabled, the digital state is off
-    if (this->pid.GetMode() == MANUAL)
-    {
+    if (this->pid.GetMode() == MANUAL) {
         this->active = false;
         return;
     }
@@ -46,15 +44,13 @@ void HeaterPID::compute(double input)
     }
 }
 
-void HeaterPID::set_setpoint(double setpoint)
-{
+void HeaterPID::set_setpoint(double setpoint) {
     // Limit setpoint to hard coded range
     setpoint = setpoint < 20.0 ? 20.0 : (setpoint > 150.0 ? 150.0 : setpoint);
     this->setpoint = setpoint;
 }
 
-void HeaterPID::set_window(int window)
-{
+void HeaterPID::set_window(int window) {
     // The window will be stored as u16, so limit it to that size
     if (get_settings().validate_set_heater_window(window)) {
         this->window = window;
@@ -64,8 +60,7 @@ void HeaterPID::set_window(int window)
     }
 }
 
-void HeaterPID::configure(double kp, double ki, double kd)
-{
+void HeaterPID::configure(double kp, double ki, double kd) {
     this->pid.SetTunings(kp, ki, kd);
     Settings& settings = get_settings();
     settings.heater_kp = kp;
@@ -81,18 +76,15 @@ bool HeaterPID::is_enabled() const {
     return const_cast<HeaterPID*>(this)->pid.GetMode() == AUTOMATIC;
 }
 
-void HeaterPID::enable()
-{
+void HeaterPID::enable() {
     this->pid.SetMode(AUTOMATIC);
 }
 
-void HeaterPID::disable()
-{
+void HeaterPID::disable() {
     this->pid.SetMode(MANUAL);
 }
 
-HeaterPID &get_heater()
-{
+HeaterPID &get_heater() {
     static HeaterPID instance;
     return instance;
 }

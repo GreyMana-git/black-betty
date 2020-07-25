@@ -198,7 +198,10 @@ bool CommandParser::get(char** token, const int token_count, char* output, size_
     } else if (is_token(token[0], F("pid.setpoint"))) {
         double_to_string(output, heater.get_setpoint());
         return true;
-    } 
+    } else if (is_token(token[0], F("debug"))) {
+      copy_flash_string(output, settings.is_debug() ? F("true") : F("false"), output_size);
+      return true;
+    }
 
     return false;
 }
@@ -210,6 +213,8 @@ bool CommandParser::set(char** token, const int token_count, char* output, size_
         return settings.validate_set_wifi(token[1], token[2], token[3]);
     } else if (is_token(token[0], F("id"), token_count > 1)) {
         return settings.validate_set_device_id(token[1]);
+    } else if (is_token(token[0], F("heater"), token_count > 2)) {
+      return settings.validate_set_heater_temperature_low(atof(token[1])) && settings.validate_set_heater_temperature_high(atof(token[2]));
     } else if (is_token(token[0], F("heater.low"), token_count > 1)) {
         return settings.validate_set_heater_temperature_low(atof(token[1]));
     } else if (is_token(token[0], F("heater.high"), token_count > 1)) {
@@ -228,6 +233,9 @@ bool CommandParser::set(char** token, const int token_count, char* output, size_
             get_heater().configure(settings.heater_kp, settings.heater_ki, settings.heater_kd);
             return true;
         }
+    } else if (is_token(token[0], F("debug"), token_count > 1)) {
+        settings.set_debug(is_token(token[1], F("true")));
+        return true;
     }
 
     return false;

@@ -1,16 +1,29 @@
 body {
     font-family: sans-serif;
+    font-size: 16px;
     margin: 0;
     color: #0d0d0d;
 }
 
 header {
-    padding: 24px;
+    padding: 16px;
     color: #f9f9fa;
     background-color: #0d0d0d;
     font-size: 64px;
-    line-height: 40px;
+    line-height: 64px;
     box-shadow: 0 4px 2px -2px rgba(0, 0, 0, 0.6);
+}
+
+header .logo {
+    display: inline-block;
+    text-align: center;
+    width: 64px;
+    height: 64px;
+}
+
+header .logo img {
+    position: relative;
+    top: -8px;
 }
 
 h1 {
@@ -59,8 +72,8 @@ h1 {
     grid-template-columns: 2fr 1fr;
 }
 
-.overview .overview-temperature {
-    font-size: 80px;
+.overview .overview-value {
+    font-size: 64px;
     display: inline-block;
     width: 50%;
     text-align: right;
@@ -81,15 +94,37 @@ h1 {
 .setting-panel {
     position: fixed;
     top: 0;
-    left: 0;
+    left: -50%;
     width: 50%;
     height: 100%;
     box-shadow: 4px 0 2px -2px rgba(0, 0, 0, 0.6);
     background-color: #ffffff;
     padding: 24px;
     overflow-y: auto;
-    display: none;
+    box-sizing: border-box;
 }
+
+.slide-in {
+    animation: slide-in 0.3s forwards;
+}
+
+@keyframes slide-in {
+    100% { left: 0; }
+}
+.slide-out {
+    animation: slide-out 0.3s forwards;
+}
+@keyframes slide-out {
+    0% { left: 0; }
+    100% { left: -50%; }
+}
+
+
+.wrapper:hover #slide {
+    transition: 1s;
+    left: 0;
+}
+
 #setting-open {
     cursor: pointer;
 }
@@ -112,7 +147,6 @@ h1 {
     padding-bottom: 24px;
 }
 
-
 input[type="text"] {
     height: 40px;
     padding: 0 8px 0 8px;
@@ -123,7 +157,7 @@ input[type="text"] {
     box-sizing: border-box;
 }
 
-input[type="button"], button {
+button {
     height: 40px;
     padding: 0 8px 0 px;
     font-size: 24px;
@@ -137,6 +171,41 @@ input[type="button"], button {
     cursor: pointer;
 }
 
-input[type="button"]:hover, button:hover {
+button:hover {
     background-color: #2080f0;
+}
+
+button#setting-restart {
+    background-color: #be4e10;
+}
+
+button#setting-restart:hover {
+    background-color: #f06020;
+}
+
+
+.notify-panel {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    width: 384px;
+    height: 128px;
+    background-color: #ffffff;
+    padding: 8px;
+    border: 1px solid #ebe9e1;
+    box-shadow: 4px 4px 2px -2px rgba(0, 0, 0, 0.6);
+}
+
+.notify-panel #notify-header {
+    font-weight: bold;
+    padding-bottom: 12px;
+}
+
+.fade-out {
+    animation: fade-out 4s forwards;
+}
+@keyframes fade-out {
+    0% { opacity: 1; }
+    75% { opacity: 1; }
+    100% { opacity: 0; }
 }

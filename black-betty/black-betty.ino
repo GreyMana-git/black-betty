@@ -1,4 +1,3 @@
-#define DEBUG_MODE 1
 #include <WString.h>
 #include <EasyADT7410.h>
 #include <TM1637Display.h>
@@ -83,7 +82,6 @@ void loop() {
   status.temperature = temperature;
 
   // Update heater
-  
   if (status.heater_timer.next()) {
     // Update heater rely
     heater.compute(temperature);

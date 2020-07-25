@@ -4,21 +4,21 @@ Write-Host "Exporting html package to ESP8266 sources"
 
 function Replace-Script([System.Text.RegularExpressions.Match] $Match) {
     $local:filename = $Match.Groups["File"]
-    $local:content = Get-Content -LiteralPath ("./dist" + $local:filename) -Raw
+    $local:content = Get-Content -LiteralPath ("./dist" + $local:filename) -Raw -Encoding UTF8
     $local:content = [regex]::Replace($local:content, "//# sourceMappingURL=[^\n]+", "", $options)
     return "<script>" + $local:content + "</script>";
 }
 
 function Replace-Css([System.Text.RegularExpressions.Match] $Match) {
     $local:filename = $Match.Groups["File"]
-    $local:content = (Get-Content -LiteralPath ("./dist" + $local:filename) -Raw)
+    $local:content = (Get-Content -LiteralPath ("./dist" + $local:filename) -Raw -Encoding UTF8)
     $local:content = [regex]::Replace($local:content, "\/\*# sourceMappingURL=.*?\*/", "", $options)
     return "<style>" + $local:content + "</style>";
 }
 
 function Export()
 {
-    $local:content = Get-Content -LiteralPath "./dist/index.html" -Raw;
+    $local:content = Get-Content -LiteralPath "./dist/index.html" -Raw -Encoding UTF8;
     $local:content = [regex]::Replace($local:content, "<script src=`"(?<File>[^`"]+)`"></script>", { param($Match) Replace-Script($Match) }, $options)
     $local:content = [regex]::Replace($local:content, "<link rel=`"stylesheet`" href=`"(?<File>[^`"]+)`">", { param($Match) Replace-Css($Match) }, $options)
     

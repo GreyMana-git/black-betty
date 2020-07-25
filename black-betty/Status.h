@@ -1,6 +1,6 @@
 #pragma once
 
-constexpr int HISTORY_SIZE = 10;
+constexpr int HISTORY_SIZE = 5;
 constexpr int HISTORY_SLOT_TIME = 1000;
 
 class SimpleTimer {

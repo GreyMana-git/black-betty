@@ -77,28 +77,38 @@ void WebServer::get_ip(char* output, size_t size) const {
 }
 
 void WebServer::on_serve_index() {
-    server.send(200, F("text/html"), WebServer::webpage_index_content);
+    server.send(200, F("text/html; charset=utf-8"), WebServer::webpage_index_content);
 }
 
 void WebServer::on_serve_status() {
+  const Settings& settings = get_settings();
+
+    // Only allow CORS in debug mode
+    if (settings.is_debug()) {
+      server.sendHeader(F("Access-Control-Allow-Origin"), F("*")); // DEBUG, DEBUG, DEBUG!
+    }
+
     char buffer[2048];
     buffer[0] = buffer[array_size(buffer) - 1] = 0x00;
  
     // Extracting the json creation to another method will allow the stack to discard json helper structures when calling send
     create_status_json(buffer, array_size(buffer));
-
     Serial.printf("WebServer::on_serve_status -> Buffer usage: %d / %d\n", strlen(buffer), array_size(buffer));
-    server.sendHeader(F("Access-Control-Allow-Origin"), F("*")); // DEBUG, DEBUG, DEBUG!
     server.send(200, F("application/json"), buffer);
 }
 
 void WebServer::on_serve_command() {
-  // Support CORS-Preflight (DEBUG! DEBUG! DEBUG!)
-    if (server.method() == HTTPMethod::HTTP_OPTIONS) {
+  const Settings& settings = get_settings();
+
+    // Only allow CORS in debug mode
+    if (settings.is_debug()) {
         Serial.println("WebServer::on_serve_command CORS preflight incomming");
         server.sendHeader(F("Access-Control-Allow-Origin"), F("*"));
         server.sendHeader(F("Access-Control-Allow-Allow-Method"), F("POST, OPTIONS"));
         server.sendHeader(F("Access-Control-Allow-Headers"), F("X-Requested-With, Content-Type"));
+    }
+  
+    if (server.method() == HTTPMethod::HTTP_OPTIONS) {
         server.send(204);
         return;
     }
