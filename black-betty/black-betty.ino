@@ -21,6 +21,15 @@ static ADT7410& get_sensor()
   return instance;
 }
 
+void nextStep(const __FlashStringHelper* message) {
+  if (message != nullptr) {
+    Serial.println(message);
+  }
+  
+  static int setup_step = 0;
+  get_display().showNumberDecEx(++setup_step, 0, false, 4, 0);
+}
+
 void setup()
 {
   // Serial connection
@@ -37,29 +46,29 @@ void setup()
   Serial.println(F("Setting up display..."));
   TM1637Display &display = get_display();
   display.setBrightness(2); //set the diplay brightness 0-7
-  display.showNumberDecEx(0, 0, false, 4, 0);
 
   // Temperature sensor
-  Serial.println(F("Setting up temperature sensor..."));
+  nextStep(F("Setting up temperature sensor..."));
   ADT7410 &sensor = get_sensor();
   sensor.begin();
 
   // Heater pid
-  Serial.println(F("Setting up header pid..."));
+  nextStep(F("Setting up header pid..."));
   HeaterPID &heater = get_heater();
   heater.set_setpoint(settings.heater_temperature_low);
 
   // Pins
-  Serial.println("Setting up pins...");
+  nextStep(F("Setting up pins..."));
   pinMode(settings.relay_pin, OUTPUT);
   pinMode(settings.heater_toggle_pin, INPUT);
 
   // Setup server
   Serial.printf("Setting up web server. Connecting to %s\n", settings.wifi_ssid);
+  nextStep(nullptr);
   get_webserver().connect(settings.device_id, settings.wifi_ssid, settings.wifi_password, 30000);
 
   // Activate heater pid
-  Serial.println("Setting up PID...");
+  nextStep(F("Setting up PID..."));
   heater.enable();
 
   delay(100);
@@ -80,6 +89,7 @@ void loop() {
   // Measure temperature
   double temperature = get_sensor().readTemperature(); // 50.0 + static_cast<double>(rand() % 10); 
   status.temperature = temperature;
+  status.is_heater_toggle_active = digitalRead(settings.heater_toggle_pin) == HIGH;
 
   // Update heater
   if (status.heater_timer.next()) {
@@ -89,20 +99,31 @@ void loop() {
     
     if (!heater.is_enabled()) {
       status.heater_mode = HeaterMode::off;
+    } else if (settings.is_countdown_mode() || !status.is_heater_toggle_active) {
+      status.heater_mode = HeaterMode::low;
     } else {
-      bool is_low = digitalRead(settings.heater_toggle_pin) == LOW;
-      status.heater_mode = is_low ? HeaterMode::low : HeaterMode::high;
-      heater.set_setpoint(is_low ? settings.heater_temperature_low : settings.heater_temperature_high);
+      status.heater_mode = HeaterMode::high;
     }
+
+    heater.set_setpoint(status.heater_mode == HeaterMode::low ? settings.heater_temperature_low : settings.heater_temperature_high);
   }
 
   // Update display. This is a 4 digit display, the last number is 0.1, so multiply by 10 for displaying
   if (status.display_timer.next()) {
-    const int display_temperature = static_cast<int>(status.temperature * 10.0);
-    if (status.display_needs_update(display_temperature, heater.is_active())) {
-      // Use the first dot as on/off indicator for the heater
-      const uint8_t dots = heater.is_active() ? 0b10100000 : 0b00100000;
-      get_display().showNumberDecEx(display_temperature, dots, false, 4, 0); //(number, dots, leading_zeros, length, position)
+    // Use the first dot as on/off indicator for the heater
+    const uint8_t dots = heater.is_active() ? 0b10100000 : 0b00100000;
+    if (settings.is_countdown_mode() && status.is_heater_toggle_active) {
+      int elapsed = status.update_countdown() / 100;
+      if (status.display_needs_update(elapsed, heater.is_active())) {
+        get_display().showNumberDecEx(elapsed, dots, false, 4, 0); //(number, dots, leading_zeros, length, position)
+      }
+    } else {
+      // Normal temperature mode
+      status.countdown_start = 0;
+      const int display_temperature = static_cast<int>(status.temperature * 10.0);
+      if (status.display_needs_update(display_temperature, heater.is_active())) {
+        get_display().showNumberDecEx(display_temperature, dots, false, 4, 0); //(number, dots, leading_zeros, length, position)
+      }
     }
   }
 

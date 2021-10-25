@@ -55,6 +55,8 @@ public:
 
     double temperature;
     HeaterMode heater_mode;
+    unsigned long countdown_start;
+    bool is_heater_toggle_active;
 
     SimpleTimer console_timer;
     SimpleTimer heater_timer;
@@ -67,6 +69,8 @@ public:
     const StatusHistoryItem& get_history(int index) const;
     const char* get_heater_mode() const;
     void sendStatus() const;
+
+    int update_countdown();
 
 private:
     static int next_sequence;

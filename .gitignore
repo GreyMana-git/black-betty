@@ -34,3 +34,4 @@
 .cache/
 node_modules/
 dist/
+/.vscode

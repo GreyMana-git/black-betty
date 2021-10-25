@@ -101,6 +101,13 @@ void Settings::set_debug(bool enable) {
   this->flags = (this->flags & ~SettingsFlags::FLAG_DEBUG) | (enable ? SettingsFlags::FLAG_DEBUG : 0);
 }
 
+bool Settings::is_countdown_mode() const {
+  return (this->flags & SettingsFlags::FLAG_COUNTDOWN_MODE) == SettingsFlags::FLAG_COUNTDOWN_MODE;
+}
+void Settings::set_countdown_mode(bool enable) {
+  this->flags = (this->flags & ~SettingsFlags::FLAG_COUNTDOWN_MODE) | (enable ? SettingsFlags::FLAG_COUNTDOWN_MODE : 0);
+}
+
 void Settings::load()
 {
     // Load the data from eprom into memory (including offset bytes)

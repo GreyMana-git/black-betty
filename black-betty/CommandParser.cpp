@@ -201,6 +201,9 @@ bool CommandParser::get(char** token, const int token_count, char* output, size_
     } else if (is_token(token[0], F("debug"))) {
       copy_flash_string(output, settings.is_debug() ? F("true") : F("false"), output_size);
       return true;
+    } else if (is_token(token[0], F("countdown_mode"))) {
+      copy_flash_string(output, settings.is_countdown_mode() ? F("true") : F("false"), output_size);
+      return true;
     }
 
     return false;
@@ -235,6 +238,9 @@ bool CommandParser::set(char** token, const int token_count, char* output, size_
         }
     } else if (is_token(token[0], F("debug"), token_count > 1)) {
         settings.set_debug(is_token(token[1], F("true")));
+        return true;
+    } else if (is_token(token[0], F("countdown_mode"), token_count > 1)) {
+        settings.set_countdown_mode(is_token(token[1], F("true")));
         return true;
     }
 

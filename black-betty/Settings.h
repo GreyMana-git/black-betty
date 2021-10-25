@@ -3,7 +3,8 @@
 #include <stdint.h>
 
 enum SettingsFlags {
-  FLAG_DEBUG = 0x01 // Device debug mode. This allows CORS requests to the device
+  FLAG_DEBUG = 0x01, // Device debug mode. This allows CORS requests to the device
+  FLAG_COUNTDOWN_MODE = 0x02 // Puts the device in countdown mode, this showns a counter when pressing the high temperature button instead of changing the setpoint
 };
 
 /** Class for managing the variables in the project. This also supports serializing/storing/loading */
@@ -32,6 +33,9 @@ public:
 
     bool is_debug() const;
     void set_debug(bool enable);
+
+    bool is_countdown_mode() const;
+    void set_countdown_mode(bool enable);
 
     uint32_t magic;
     uint16_t heater_window;

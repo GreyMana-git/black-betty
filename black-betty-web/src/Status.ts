@@ -2,6 +2,8 @@
 interface CommonStatusResponse {
     id: string;
     token: number;
+    isDebug: boolean;
+    isCountdownMode: boolean;
     temperature: {
         current: number;
         target: number;
@@ -80,6 +82,8 @@ export async function getStatus(oldStatus: StatusResponse | null): Promise<Statu
     const status: StatusResponse = {
         "id": source.id,
         "token": source.token,
+        "isDebug": source.isDebug,
+        "isCountdownMode": source.isCountdownMode,
         "temperature": source.temperature,
         "pid": source.pid,
         "heater": source.heater,

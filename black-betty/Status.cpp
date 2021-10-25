@@ -64,6 +64,8 @@ StatusHistoryItem::StatusHistoryItem() : samples(0) {
 Status::Status() :  
         temperature(0.0),
         heater_mode(HeaterMode::off),
+        countdown_start(0),
+        is_heater_toggle_active(false),
         display_temperature(0),
         display_heater_active(false),
         history_index(0),
@@ -86,6 +88,10 @@ bool Status::display_needs_update(int temperature, bool heater_active) {
     this->display_temperature = temperature;
     this->display_heater_active = heater_active;
     return true;
+}
+
+const StatusHistoryItem& Status::get_history(int index) const {
+    return this->history_ringbuffer[(HISTORY_SIZE + this->history_index - index) % HISTORY_SIZE];
 }
 
 void Status::update_history(double temperature, double output, bool heater, unsigned long healthtime) {
@@ -117,8 +123,12 @@ void Status::update_history(double temperature, double output, bool heater, unsi
     item.samples++;
 }
 
-const StatusHistoryItem& Status::get_history(int index) const {
-    return this->history_ringbuffer[(HISTORY_SIZE + this->history_index - index) % HISTORY_SIZE];
+int Status::update_countdown() {
+    if (this->countdown_start == 0) {
+        this->countdown_start = millis() + 5000;
+    }
+
+    return static_cast<int>(millis() - this->countdown_start);
 }
 
 const char* Status::get_heater_mode() const {

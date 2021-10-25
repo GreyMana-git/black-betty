@@ -28,6 +28,9 @@ bool WebServer::connect(const char* hostname, const char* ssid, const char* pass
     int start = millis();
     timeout += start;
 
+    // Change the wifi to client only mode (avoid creating a public access point)
+    WiFi.mode(WIFI_STA, false);
+
     // Begin with the WiFi
     WiFi.hostname(hostname);
     WiFi.begin(ssid, password);
@@ -152,7 +155,9 @@ void WebServer::create_status_json(char* output, size_t size) {
     char* pos = output;
     pos = json_add(pos, F("{"));
     pos = json_add_property(pos, F("id"), settings.device_id, true);
-    pos = json_add_property(pos, F("token"), token, false);
+    pos = json_add_property(pos, F("token"), token, true);
+    pos = json_add_property(pos, F("isDebug"), settings.is_debug(), true);
+    pos = json_add_property(pos, F("isCountdownMode"), settings.is_countdown_mode(), false);
     pos = json_add(pos, F(",\"temperature\":{"));
     pos = json_add_property(pos, F("current"), status.temperature, true);
     pos = json_add_property(pos, F("target"), heater.get_setpoint(), true);

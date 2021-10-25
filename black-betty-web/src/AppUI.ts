@@ -38,6 +38,7 @@ export class AppUI {
                 t("setting-pid-kp", this.status.pid.kp);
                 t("setting-pid-ki", this.status.pid.ki);
                 t("setting-pid-kd", this.status.pid.kd);
+                t("setting-toggle-countdown", this.status.isCountdownMode ? "Disable Countdown" : "Enable Countdown");
                 element.classList.remove("slide-out");
                 element.classList.add("slide-in");
             }
@@ -67,6 +68,15 @@ export class AppUI {
                 const kd = parseFloat(this.getText("setting-pid-kd"));
                 
                 await execute(this, "SET pid " + kp + " " + ki + " " + kd);
+            }
+        });
+
+        // Setting countdown mode
+        this.on("setting-toggle-countdown", "click", async () => {
+            if (this.status != null) {
+                const mode = !this.status.isCountdownMode;
+                await execute(this, "SET countdown_mode " + mode.toString());
+                this.setText("setting-toggle-countdown", mode ? "Disable Countdown" : "Enable Countdown");
             }
         });
 
