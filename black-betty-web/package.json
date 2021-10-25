@@ -2,7 +2,6 @@
   "name": "black-betty-web",
   "version": "1.0.0",
   "description": "Web Interface development for the black betty coffeemachine",
-  "main": "index.ts",
   "scripts": {
     "serve": "parcel index.html -p 8080 --open",
     "export": "(npx parcel build index.html) && (@powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./Export.ps1)"
@@ -10,7 +9,7 @@
   "author": "greymana",
   "license": "MIT",
   "devDependencies": {
-    "parcel": "^1.12.4",
-    "typescript": "^3.9.7"
+    "parcel": "^2.0.0",
+    "typescript": "^4.4.4"
   }
 }
